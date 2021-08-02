@@ -12,7 +12,7 @@ export const Dishes = (
     case ActionTypes.ADD_DISHES:
       return {
         ...state,
-        isLoading: true,
+        isLoading: false,
         errMessage: null,
         dishes: action.payload,
       };
