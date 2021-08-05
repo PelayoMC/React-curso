@@ -7,25 +7,55 @@ import {
   CardHeader,
   Media,
 } from "reactstrap";
+import { Fade, Stagger } from "react-animation-components";
 import { Link } from "react-router-dom";
+import { Loading } from "./LoadingComponent";
+import { baseUrl } from "../shared/baseUrl";
 
 function About(props) {
-  const leaders = props.leaders;
-
   const RenderLeader = (props) => {
-    const { leader } = props;
-    return (
-      <Media>
-        <Media className="d-none d-sm-block p-sm-3" left>
-          <Media object src={leader.image} alt={leader.name} />
-        </Media>
-        <Media className="p-12 p-sm-3" body>
-          <Media heading>{leader.name}</Media>
-          <p>{leader.designation}</p>
-          <p>{leader.description}</p>
-        </Media>
-      </Media>
-    );
+    const { leaders, isLoading, errMess } = props;
+    if (isLoading) {
+      return (
+        <div className="container">
+          <div className="row">
+            <Loading />
+          </div>
+        </div>
+      );
+    } else if (errMess) {
+      return (
+        <div className="container">
+          <div className="row">
+            <div className="col-12">
+              <h4>{errMess}</h4>
+            </div>
+          </div>
+        </div>
+      );
+    } else
+      return (
+        <Stagger in>
+          {leaders.map((leader, k) => (
+            <Fade in key={k}>
+              <Media>
+                <Media className="d-none d-sm-block p-sm-3" left>
+                  <Media
+                    object
+                    src={baseUrl + leader.image}
+                    alt={leader.name}
+                  />
+                </Media>
+                <Media className="p-12 p-sm-3" body>
+                  <Media heading>{leader.name}</Media>
+                  <p>{leader.designation}</p>
+                  <p>{leader.description}</p>
+                </Media>
+              </Media>
+            </Fade>
+          ))}
+        </Stagger>
+      );
   };
 
   return (
@@ -105,11 +135,11 @@ function About(props) {
         </div>
         <div className="col-12">
           {/* <Media list>{leaders}</Media> */}
-          {leaders
-            ? leaders.map((leader, k) => (
-                <RenderLeader key={k} leader={leader}></RenderLeader>
-              ))
-            : null}
+          <RenderLeader
+            leaders={props.leaders.leaders}
+            isLoading={props.leaders.isLoading}
+            errMess={props.leaders.errMess}
+          ></RenderLeader>
         </div>
       </div>
     </div>

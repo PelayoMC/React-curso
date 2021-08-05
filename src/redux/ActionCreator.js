@@ -182,16 +182,55 @@ export const fetchLeaders = () => (dispatch) => {
     .catch((err) => dispatch(leadersFailed(err.message)));
 };
 
-export const addLeaders = (promos) => ({
-  type: ActionTypes.ADD_PROMOS,
-  payload: promos,
+export const addLeaders = (leaders) => ({
+  type: ActionTypes.ADD_LEADERS,
+  payload: leaders,
 });
 
 export const leadersLoading = () => ({
-  type: ActionTypes.PROMOS_LOADING,
+  type: ActionTypes.LEADERS_LOADING,
 });
 
 export const leadersFailed = (errmess) => ({
-  type: ActionTypes.PROMOS_FAILED,
+  type: ActionTypes.LEADERS_FAILED,
   payload: errmess,
+});
+
+export const postFeedback = (feedback) => (dispatch) => {
+  feedback.date = new Date().toISOString();
+  return fetch(baseUrl + "feedback", {
+    method: "POST",
+    body: JSON.stringify(feedback),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "same-origin",
+  })
+    .then(
+      (response) => {
+        if (response.ok) {
+          return response;
+        } else {
+          var error = new Error(
+            "Error " + response.status + ": " + response.statusText
+          );
+          error.response = response;
+          throw error;
+        }
+      },
+      (error) => {
+        throw error;
+      }
+    )
+    .then((response) => response.json())
+    .then((response) => dispatch(addFeedback(response)))
+    .catch((error) => {
+      console.log("post comments", error.message);
+      alert("Your comment could not be posted\nError: " + error.message);
+    });
+};
+
+export const addFeedback = (feedback) => ({
+  type: ActionTypes.ADD_FEEDBACK,
+  payload: feedback,
 });

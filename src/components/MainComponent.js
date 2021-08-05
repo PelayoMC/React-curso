@@ -10,6 +10,7 @@ import { Switch, Route, Redirect, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import {
   postComment,
+  postFeedback,
   fetchComments,
   fetchDishes,
   fetchPromos,
@@ -30,6 +31,26 @@ const mapStateProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
   postComment: (dishId, rating, author, comment) =>
     dispatch(postComment(dishId, rating, author, comment)),
+  postFeedback: ({
+    firstname,
+    lastname,
+    telnum,
+    email,
+    agree,
+    contactType,
+    message,
+  }) =>
+    dispatch(
+      postFeedback({
+        firstname,
+        lastname,
+        telnum,
+        email,
+        agree,
+        contactType,
+        message,
+      })
+    ),
   fetchDishes: () => dispatch(fetchDishes()),
   fetchComments: () => dispatch(fetchComments()),
   fetchPromos: () => dispatch(fetchPromos()),
@@ -42,11 +63,11 @@ class Main extends Component {
     this.props.fetchDishes();
     this.props.fetchComments();
     this.props.fetchPromos();
+    this.props.fetchLeaders();
   }
 
   render() {
     const HomePage = () => {
-      console.log(this.props);
       return (
         <Home
           dish={this.props.dishes.dishes.filter((dish) => dish.featured)[0]}
@@ -69,7 +90,6 @@ class Main extends Component {
     };
 
     const DishWithId = ({ match }) => {
-      console.log(this.props.comments);
       return (
         <Dishdetail
           dish={
@@ -87,7 +107,6 @@ class Main extends Component {
         ></Dishdetail>
       );
     };
-
     return (
       <div>
         <Header />
@@ -103,11 +122,7 @@ class Main extends Component {
                 exact
                 path="/about"
                 component={() => (
-                  <AboutComponent
-                    leaders={this.props.leaders.leaders}
-                    leadersLoading={this.props.leaders.isLoading}
-                    leadersErrMess={this.props.leaders.errMessage}
-                  />
+                  <AboutComponent leaders={this.props.leaders} />
                 )}
               />
               <Route
@@ -121,6 +136,7 @@ class Main extends Component {
                 path="/contactus"
                 component={() => (
                   <ContactComponent
+                    postFeedback={this.props.postFeedback}
                     resetFeedbackForm={this.props.resetFeedbackForm}
                   />
                 )}

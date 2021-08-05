@@ -53,7 +53,6 @@ function RenderComments({ comments, postComment, dishId }) {
         <ul className="list-unstyled">
           <Stagger in>
             {comments.map((comment, k) => {
-              console.log(comment);
               return (
                 <Fade in key={k}>
                   <li>
